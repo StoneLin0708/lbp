@@ -78,7 +78,7 @@ void lbpFeatureEvaluator::loadImage(cv::Mat image,bool toLBP){
     //image.copyTo(_image);
     //_image = image.clone();
     cvtColor(image,_image,CV_BGR2GRAY );
-
+	imshow("hiiii",_image);
     feature.height = _image.rows-2;
     feature.width = _image.cols-2;
     if(toLBP)countLBP();

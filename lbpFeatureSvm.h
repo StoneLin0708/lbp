@@ -3,7 +3,7 @@
 #include "pcaDimReduce.h"
 #define label_pos 1.0f
 #define label_neg -1.0f
-/*
+
 #define feature0 17
 #define feature1 31
 #define feature2 112
@@ -12,7 +12,7 @@
 #define feature5 241
 #define feature6 249
 #define feature7 255
-*/
+
 #define featureNumber 256
 #define featureNumberReduce 100
 

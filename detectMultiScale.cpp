@@ -12,7 +12,6 @@ int detectMultiScale(lbpFeatureSvm& svm,cv::Mat& image,double scale = 1.1,int mi
     lbpFeatureEvaluator evaluator;
     Mat testImage = image.clone();
     int delta;
-
     cout << "image w = " << image.cols << " h = " << image.rows << endl;
 
     while( min_width >= (trainW+2) * pow( scale ,times ) )
