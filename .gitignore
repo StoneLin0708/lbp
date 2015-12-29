@@ -2,4 +2,5 @@ bin
 obj
 test
 .gitignore
-gitpush.sh
+lbp_svm
+lbp_svmdbg
