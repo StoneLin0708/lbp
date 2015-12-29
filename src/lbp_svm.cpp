@@ -66,7 +66,7 @@ int test(int argc,const char* argv[]){
     double t0,t1;
     double scale = 1;
     int found;
-    char testData[PATH_MAX] = "test/001.jpg";
+    char testData[PATH_MAX] = "testImg/001.jpg";
     Mat test = imread(testData);
 
     if(!test.data){
@@ -78,7 +78,7 @@ int test(int argc,const char* argv[]){
     Mat test2 = test.clone();
     //imshow("test",test);
     char resultName[PATH_MAX];
-    char trainPath[PATH_MAX] = { "test/" };
+    char trainPath[PATH_MAX] = { "trained/" };
     char trainFile[PATH_MAX] = { //"train3P1N3.xml"
                                  //"trainN3.xml"
                                  //"train3P0N3.xml"
@@ -86,7 +86,7 @@ int test(int argc,const char* argv[]){
                                  //"trainTP2N7.xml"
                                  "trainTP2N7_PCA.xml"
                                  };
-    char pcaPath[PATH_MAX] = { "test/trainTP2N7_matrix.txt" };
+    char pcaPath[PATH_MAX] = { "trained/trainTP2N7_matrix.txt" };
     strcat(trainPath,trainFile);
     svm.load(trainPath,pcaPath);
 
@@ -94,11 +94,9 @@ int test(int argc,const char* argv[]){
     found = detectMultiScale(svm,test,1.1,40,60);
     t1 = getTickCount();
     cout << "time cost : " << (t1-t0)*1000/getTickFrequency() << " ms" <<endl;
+	imshow("result",test);
+	waitKey(0);
 
-    t0 = getTickCount();
-    markSkinBlock(test2);
-    t1 = getTickCount();
-    cout << "mark time cost : " << (t1-t0)*1000/getTickFrequency() << " ms" <<endl;
 }
 
 int detect(int argc,const char* argv[]){
