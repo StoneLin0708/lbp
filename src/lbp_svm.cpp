@@ -33,12 +33,12 @@ using namespace std;
 using namespace cv;
 
 int main(int argc,const char* argv[]){
-	string arg1(argv[1]);
+	string arg1;
+	if(argc>1) arg1= argv[1];
 	string s_test("test");
 	string s_detect("detect");
 	string s_train("train");
 	string s_help("help");
-
 	if(arg1==s_test){
 		test(argc,argv);
 	}
