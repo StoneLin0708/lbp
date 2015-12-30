@@ -7,3 +7,4 @@ lbp_svmdbg
 tools/sampleCut
 tools/sampleList
 tools/obj/
+*.swp
