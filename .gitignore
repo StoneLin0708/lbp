@@ -4,3 +4,6 @@ test
 .gitignore
 lbp_svm
 lbp_svmdbg
+tools/sampleCut
+tools/sampleList
+tools/obj/

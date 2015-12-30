@@ -19,3 +19,7 @@
 		2.I made basic lbp converter
 		3.svm in opencv
 		4.it can use pca to reduce traning sample (but made bad classify rate)
+
+	Tools
+		1.sample cut can cut image to set size
+		2.sample list create the image path list for sample cut and lbp_svm training
