@@ -1,8 +1,8 @@
 #include "ycbcr.h"
-using namespace std;
-using namespace cv;
+using cv::Mat;
+using cv::Vec3b;
 
-void rgb2ycbcr(cv::Mat& image,cv::Mat& result){
+void rgb2ycbcr(const cv::Mat& image,cv::Mat& result){
     int i,j;
     result = image.clone();
     for( j=0; j<image.rows; j++){
