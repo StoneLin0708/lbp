@@ -1,6 +1,8 @@
 #include "lbpFeatureSvm.h"
 #include "ycbcr.h"
 #include <string>
+#include <opencv2/ml.hpp>
+
 /*struct trainingSetting{
 	int trainImageH = 46;
 	int trainImageW = 38;
@@ -29,8 +31,9 @@ int detect(int argc,const char* argv[]);
 int train(int argc,const char* argv[]);
 
 
-using namespace std;
-using namespace cv;
+using std::string;
+using std::cout;
+using cv::ml::SVM;
 
 int main(int argc,const char* argv[]){
 	string arg1;
@@ -47,14 +50,14 @@ int main(int argc,const char* argv[]){
 	else if(arg1==s_train){
 	}
 	else if(arg1==s_help){
-		cout<< "  [function] [operation]"<< endl;
-		cout<< "   test arga argb argc"<< endl;
-		cout<< "   detect arga argb argc"<< endl;
-		cout<< "   train arga argb argc"<< endl;
+		cout<< "  [function] [operation]\n";
+		cout<< "   test arga argb argc\n";
+		cout<< "   detect arga argb argc\n";
+		cout<< "   train arga argb argc\n";
 	}
 	else{
-		cout<< " there is no function called:"<< arg1<< endl;
-		cout<< " call help for more infomation"<< endl;
+		cout<< " there is no function called:"<< arg1<< '\n';
+		cout<< " call help for more infomation\n";
 	}
 
 	return 0;
@@ -67,15 +70,15 @@ int test(int argc,const char* argv[]){
     double scale = 1;
     int found;
     char testData[PATH_MAX] = "testImg/001.jpg";
-    Mat test = imread(testData);
+    cv::Mat test = cv::imread(testData);
 
     if(!test.data){
-	cout << "no test data : " << testData << endl;
+	cout << "no test data : " << testData << '\n';
 	return 2;
     }
 
-    resize(test,test,Size(test.cols*scale,test.rows*scale) );
-    Mat test2 = test.clone();
+    resize(test,test, cv::Size(test.cols*scale,test.rows*scale) );
+    cv::Mat test2 = test.clone();
     //imshow("test",test);
     char resultName[PATH_MAX];
     char trainPath[PATH_MAX] = { "trained/" };
@@ -90,12 +93,12 @@ int test(int argc,const char* argv[]){
     strcat(trainPath,trainFile);
     svm.load(trainPath,pcaPath);
 
-    t0 = getTickCount();
+    t0 = cv::getTickCount();
     found = detectMultiScale(svm,test,1.1,40,60);
-    t1 = getTickCount();
-    cout << "time cost : " << (t1-t0)*1000/getTickFrequency() << " ms" <<endl;
+    t1 = cv::getTickCount();
+    cout << "time cost : " << (t1-t0)*1000/cv::getTickFrequency() << " ms\n";
 	imshow("result",test);
-	waitKey(0);
+    cv::waitKey(0);
 
 }
 
@@ -103,7 +106,7 @@ int detect(int argc,const char* argv[]){
 
     if(argc != 3 ) return 1;
 
-    Mat test = imread( argv[2] );
+    auto test = cv::imread( argv[2] );
     if(!test.data) return 2;
     lbpFeatureSvm svm;
     svm.load( argv[1] ,argv[2]);
@@ -112,24 +115,24 @@ int detect(int argc,const char* argv[]){
     double scale = 0.8;
     int i;
 
-    Mat image = test.clone() ;
-    if(0){
+    auto image = test.clone() ;
+    if(false){
         for ( i = 1; i < 3; i = i + 2 )
             bilateralFilter ( test, image, i, i*2, i/2 );
     }
 
-    resize(image,image,Size(image.cols/scale,image.rows/scale));
+    cv::resize(image,image,cv::Size(image.cols/scale,image.rows/scale));
 
-    t1 = getTickCount();
+    t1 = cv::getTickCount();
     detectMultiScale(svm,image);
-    t2 = getTickCount();
+    t2 = cv::getTickCount();
 
-    cout << "time cost : " << (t2-t1)/getTickFrequency() << " sec" <<endl;
+    cout << "time cost : " << (t2-t1)/cv::getTickFrequency() << " sec\n";
 
     imshow("resoult",image);
     imwrite("result.jpg",image);
 
-    while(waitKey(30) != 27);
+    while(cv::waitKey(30) != 27);
 return 0;
 }
 
@@ -146,30 +149,36 @@ int train(int argc,const char* argv[]){
     if( !lbpsSvm.loadPosSamples(pos) )return 1;
     if( !lbpsSvm.loadNegSamples(neg) ) return 2;
 
-    CvSVMParams params;
-
-    params.svm_type = CvSVM::NU_SVC;
+    // CvSVMParams params;
+    auto svm = cv::ml::SVM::create();
+    svm->setType(cv::ml::SVM::C_SVC);
+    // params.svm_type = CvSVM::NU_SVC;
     //params.svm_type = CvSVM::C_SVC;
-    params.kernel_type = CvSVM::LINEAR;
+    svm->setKernel(SVM::LINEAR);
+    // params.kernel_type = CvSVM::LINEAR;
     //params.kernel_type = CvSVM::RBF;
-    params.degree = 0; // for poly
-    params.gamma = 0;  // for poly/rbf/sigmoid
-    params.coef0 = 0;  // for poly/sigmoid
+    // params.degree = 0; // for poly
+    // params.gamma = 0;  // for poly/rbf/sigmoid
+    // params.coef0 = 0;  // for poly/sigmoid
 
-    params.C = 0.019;  // for CV_SVM_C_SVC, CV_SVM_EPS_SVR and CV_SVM_NU_SVR
-    params.nu = 0.15; // for CV_SVM_NU_SVC, CV_SVM_ONE_CLASS, and CV_SVM_NU_SVR
-    params.p = 0; // for CV_SVM_EPS_SVR
+    svm->setC(0.019);
+    svm->setNu(0.15);
+    svm->setP(0);
+    // params.C = 0.019;  // for CV_SVM_C_SVC, CV_SVM_EPS_SVR and CV_SVM_NU_SVR
+    // params.nu = 0.15; // for CV_SVM_NU_SVC, CV_SVM_ONE_CLASS, and CV_SVM_NU_SVR
+    // params.p = 0; // for CV_SVM_EPS_SVR
     //CvMat*      class_weights; // for CV_SVM_C_SVC
 
-    params.term_crit =  // termination criteria
+    svm->setTermCriteria(cv::TermCriteria(CV_TERMCRIT_EPS, 1000, 1e-7/*DBL_EPSILON*/));
+    // params.term_crit =  // termination criteria
         //cvTermCriteria( CV_TERMCRIT_EPS, 1000, FLT_EPSILON);
-        cvTermCriteria(CV_TERMCRIT_EPS, 1000, 1e-7/*DBL_EPSILON*/);
+        // cvTermCriteria(CV_TERMCRIT_EPS, 1000, 1e-7[>DBL_EPSILON<]);
         //cvTermCriteria(CV_TERMCRIT_ITER, 90, 1e-8/*DBL_EPSILON*/);
-    t0 = getTickCount();
+    t0 = cv::getTickCount();
     //lbpsSvm.train(out,params);
-    lbpsSvm.trainP(out,outPca,params);
-    t1 = getTickCount();
-    cout << "training end in : " << ( (t1-t0)/getTickFrequency() ) << " sec"<<endl;
+    lbpsSvm.trainP(out,outPca, svm);
+    t1 = cv::getTickCount();
+    cout << "training end in : " << ( (t1-t0)/cv::getTickFrequency() ) << " sec\n";
     /*if(argc != 4){
         cout << "[positive sample list][negative samples list] [train file output]" <<endl;
         return 1;

@@ -1,3 +1,5 @@
+#ifndef LBP_FEATURE_H
+#define LBP_FEATURE_H
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -87,3 +89,4 @@ public:
 private:
     lbpFeature _feature;
 };
+#endif // LBP_FEATURE_H

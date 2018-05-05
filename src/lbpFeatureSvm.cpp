@@ -18,11 +18,11 @@ return true;
 }
 
 void lbpFeatureSvm::load(const char* trainFilePath,const char* pcaFilePath){
-    _svm.load( trainFilePath );
+    _svm->load( trainFilePath );
     _pca.load( pcaFilePath );
 }
 
-bool lbpFeatureSvm::train(const char* outFilePath,CvSVMParams& params){
+bool lbpFeatureSvm::train(const char* outFilePath, cv::Ptr<cv::ml::SVM> svm){
     int number = pos.size() + neg.size();
     int i,j;
     Mat labels(number,1,CV_32FC1);
@@ -64,9 +64,12 @@ bool lbpFeatureSvm::train(const char* outFilePath,CvSVMParams& params){
     }
 
     //training and save
-    CvSVM SVM;
-    SVM.train( trainData, labels , Mat(), Mat(), params);
-    SVM.save(outFilePath);
+    // svm->train( trainData, labels , Mat(), Mat(), params);
+    auto dataset = cv::ml::TrainData::create(trainData,
+        cv::ml::SampleTypes::COL_SAMPLE,
+        labels);
+    svm->train( dataset);
+    svm->save(outFilePath);
     //test result
     cout << "testing result : " << endl;
     Mat testMat(1,featureNumber,CV_32FC1);
@@ -75,7 +78,7 @@ bool lbpFeatureSvm::train(const char* outFilePath,CvSVMParams& params){
     //test positive samples
     for( i = 0; i < posData.rows; i++){
         testMat = posData( Rect(0,i,posData.cols,1) );
-        if(SVM.predict( testMat ) == label_pos ) detected++;
+        if(svm->predict( testMat ) == label_pos ) detected++;
     }
     cout << " positive sample detected : " << detected << " / " << posData.rows <<endl;
     success = detected;
@@ -83,7 +86,7 @@ bool lbpFeatureSvm::train(const char* outFilePath,CvSVMParams& params){
     detected = 0;
     for( i = 0; i < negData.rows; i++){
         testMat = negData( Rect(0,i,negData.cols,1) );
-        if(SVM.predict( testMat ) == label_pos ) detected++;
+        if(svm->predict( testMat ) == label_pos ) detected++;
     }
     cout << " negative sample detected : " << detected << " / " << negData.rows <<endl;
     success += negData.rows - detected;
@@ -96,7 +99,7 @@ bool lbpFeatureSvm::train(const char* outFilePath,CvSVMParams& params){
 return true;
 }
 
-bool lbpFeatureSvm::trainP(const char* outFilePath,const char* pcaPath,CvSVMParams& params){
+bool lbpFeatureSvm::trainP(const char* outFilePath,const char* pcaPath,cv::Ptr<cv::ml::SVM> svm){
 
     int number = pos.size() + neg.size();
     int i,j;
@@ -146,9 +149,12 @@ bool lbpFeatureSvm::trainP(const char* outFilePath,const char* pcaPath,CvSVMPara
     trainData = orgData*_pca.transMatrix;
 
     //training and save
-    CvSVM SVM;
-    SVM.train( trainData, labels , Mat(), Mat(), params);
-    SVM.save(outFilePath);
+    // svm->train( trainData, labels , Mat(), Mat(), params);
+    auto dataset = cv::ml::TrainData::create(trainData,
+        cv::ml::SampleTypes::COL_SAMPLE,
+        labels);
+    svm->train( dataset);
+    svm->save(outFilePath);
     //test result
     cout << "testing result : " << endl;
     Mat testMat(1,featureNumber,CV_32FC1);
@@ -158,7 +164,7 @@ bool lbpFeatureSvm::trainP(const char* outFilePath,const char* pcaPath,CvSVMPara
     for( i = 0; i < posData.rows; i++){
         testMat = posData( Rect(0,i,posData.cols,1) );
         testMat = testMat*_pca.transMatrix;
-        if(SVM.predict( testMat ) == label_pos )
+        if(svm->predict( testMat ) == label_pos )
             detected++;
     }
     cout << " positive sample detected : " << detected << " / " << posData.rows <<endl;
@@ -168,7 +174,7 @@ bool lbpFeatureSvm::trainP(const char* outFilePath,const char* pcaPath,CvSVMPara
     for( i = 0; i < negData.rows; i++){
         testMat = negData( Rect(0,i,negData.cols,1) );
         testMat = testMat*_pca.transMatrix;
-        if(SVM.predict( testMat ) == label_pos )
+        if(svm->predict( testMat ) == label_pos )
             detected++;
     }
     cout << " negative sample detected : " << detected << " / " << negData.rows <<endl;
@@ -192,7 +198,7 @@ label lbpFeatureSvm::testImage(cv::Mat& image){
     for(i=0;i<featureNumber;i++)
         testData[i] = evaluator.feature.histogram[i];
     Mat testMat(1,featureNumber,CV_32FC1,testData);
-    label re = _svm.predict(testMat);
+    label re = _svm->predict(testMat);
     return re;
 }
 
@@ -205,7 +211,7 @@ label lbpFeatureSvm::testMap(cv::Rect& area){
     for(i=0;i<featureNumber;i++)
         testData[i] = evaluator.feature.histogram[i];
     Mat testMat(1,featureNumber,CV_32FC1,testData);
-    label re = _svm.predict(testMat);
+    label re = _svm->predict(testMat);
     return re;
 }
 
@@ -235,7 +241,7 @@ int lbpFeatureSvm::testMap(lbpFeatureEvaluator& in,std::vector<object> &detected
             //t1 = getTickCount();
             //cout << "Mat mul :" << setw(3)<<t1-t0 << ",";
             //t0 = getTickCount();
-            if(_svm.predict(testMat) == label_pos){
+            if(_svm->predict(testMat) == label_pos){
                 obj.x = in.area.x;
                 obj.y = in.area.y;
                 detected.push_back( obj );
@@ -253,13 +259,13 @@ int lbpFeatureSvm::testMap(lbpFeatureEvaluator& in,std::vector<object> &detected
         else
             break;
 
-        while(1){
+        while(true){
             for(i=0;i<featureNumber;i++)
                 testData[i] = in.feature.histogram[i];
             testMat = Mat(1,featureNumber,CV_32FC1,&testData);
             testMat = testMat*_pca.transMatrix;
 
-            if(_svm.predict(testMat) == label_pos){
+            if(_svm->predict(testMat) == label_pos){
                 obj.x = in.area.x;
                 obj.y = in.area.y;
                 detected.push_back( obj );
@@ -291,7 +297,7 @@ int lbpFeatureSvm::testMapO(lbpFeatureEvaluator& in,std::vector<object> &detecte
             for(i=0;i<featureNumber;i++)
                 testData[i] = in.feature.histogram[i];
             testMat = Mat(1,featureNumber,CV_32FC1,&testData);
-            if(_svm.predict(testMat) == label_pos){
+            if(_svm->predict(testMat) == label_pos){
                 obj.x = in.area.x;
                 obj.y = in.area.y;
                 detected.push_back( obj );
@@ -311,7 +317,7 @@ int lbpFeatureSvm::testMapO(lbpFeatureEvaluator& in,std::vector<object> &detecte
             for(i=0;i<featureNumber;i++)
                 testData[i] = in.feature.histogram[i];
             testMat = Mat(1,featureNumber,CV_32FC1,&testData);
-            if(_svm.predict(testMat) == label_pos){
+            if(_svm->predict(testMat) == label_pos){
                 obj.x = in.area.x;
                 obj.y = in.area.y;
                 detected.push_back( obj );

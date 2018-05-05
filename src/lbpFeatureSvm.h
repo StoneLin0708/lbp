@@ -1,6 +1,10 @@
+#ifndef LBP_FEATURE_SVM_H
+#define LBP_FEATURE_SVM_H
 #include "lbpFeature.h"
 #include "multiImg.h"
 #include "pcaDimReduce.h"
+#include <opencv2/ml.hpp>
+
 #define label_pos 1.0f
 #define label_neg -1.0f
 
@@ -34,8 +38,8 @@ public:
     bool loadPosSamples(const char* path);
     bool loadNegSamples(const char* path);
 
-    bool train(const char* outFilePath,CvSVMParams& params);
-    bool trainP(const char* outFilePath,const char* pcaPath,CvSVMParams& params);
+    bool train(const char* outFilePath, cv::Ptr<cv::ml::SVM> svm);
+    bool trainP(const char* outFilePath,const char* pcaPath, cv::Ptr<cv::ml::SVM> svm);
     //load svm trained data
     void load(const char* trainFilePath,const char* pcaFilePath);
 
@@ -53,6 +57,7 @@ private:
     multiImg pos;
     multiImg neg;
     lbpFeatureEvaluator evaluator;
-    CvSVM _svm;
+    cv::Ptr<cv::ml::SVM> _svm;
 
 };
+#endif //LBP_FEATURE_SVM_H
