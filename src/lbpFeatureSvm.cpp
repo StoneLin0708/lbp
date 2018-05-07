@@ -1,9 +1,11 @@
 #include "lbpFeatureSvm.h"
+#include <opencv2/ml.hpp>
 
 using std::cout;
 using std::endl;
 using cv::Mat;
 using cv::Rect;
+using cv::ml::SVM;
 
 bool lbpFeatureSvm::loadPosSamples(const char* path) {
   pos.load(path, false, false);
@@ -20,7 +22,7 @@ bool lbpFeatureSvm::loadNegSamples(const char* path) {
 }
 
 void lbpFeatureSvm::load(const char* trainFilePath, const char* pcaFilePath) {
-  _svm->load(trainFilePath);
+  _svm = SVM::load(trainFilePath);
   _pca.load(pcaFilePath);
 }
 
