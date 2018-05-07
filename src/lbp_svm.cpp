@@ -26,9 +26,8 @@
 }
 */
 
-void detectSingleScale(lbpFeatureSvm& svm, cv::Mat& image);
-int detectMultiScale(lbpFeatureSvm& svm, cv::Mat& image, double scale = 1.1,
-                     int min_width = 30, int max_width = 100);
+int detect_face(lbpFeatureSvm& svm, cv::Mat& image, double scale = 1.1,
+                int min_width = 30, int max_width = 100);
 
 int test(int argc, const char* argv[]);
 int detect(int argc, const char* argv[]);
@@ -91,7 +90,7 @@ int test(int argc, const char* argv[]) {
   svm.load(trainPath, pcaPath);
 
   t0 = cv::getTickCount();
-  found = detectMultiScale(svm, test, 1.1, 40, 60);
+  found = detect_face(svm, test, 1.1, 30, 60);
   t1 = cv::getTickCount();
   cout << "time cost : " << (t1 - t0) * 1000 / cv::getTickFrequency()
        << " ms\n";
@@ -120,7 +119,7 @@ int detect(int argc, const char* argv[]) {
   cv::resize(image, image, cv::Size(image.cols / scale, image.rows / scale));
 
   t1 = cv::getTickCount();
-  detectMultiScale(svm, image);
+  detect_face(svm, image);
   t2 = cv::getTickCount();
 
   cout << "time cost : " << (t2 - t1) / cv::getTickFrequency() << " sec\n";
