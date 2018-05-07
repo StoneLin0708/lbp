@@ -3,5 +3,5 @@ set(SOURCE lbpFeature.cpp lbpFeatureSvm.cpp multiImg.cpp pcaDimReduce.cpp ycbcr.
   detectMultiScale.cpp lbp_svm.cpp)
 
 add_executable(lbp_svm ${SOURCE} ${HEADER})
-target_link_libraries(lbp_svm ${OpenCV_LIBS})
+target_link_libraries(lbp_svm PRIVATE ${OpenCV_LIBS} fmt::fmt-header-only)
 
