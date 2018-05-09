@@ -25,4 +25,7 @@ if (OpenCV_FOUND)
   message("-> OpenCV : " ${OpenCV_VERSION})
 endif()
 
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+
+include_directories(src)
 add_subdirectory(src)
