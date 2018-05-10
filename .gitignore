@@ -2,7 +2,7 @@
 !.gitignore
 !.gitattributes
 !CMakeLists.txt
-!README
+!README.md
 !feature.txt
 !/src/
 !/src_o/
