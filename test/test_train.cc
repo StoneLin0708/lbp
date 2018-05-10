@@ -9,7 +9,7 @@ int main(int argc, const char* argv[]) {
   const std::string save_path{"model.xml"};
   auto svm = SVM::create();
   svm->setType(cv::ml::SVM::NU_SVC);
-  svm->setKernel(SVM::RBF);
+  svm->setKernel(SVM::CHI2);
   svm->setNu(0.1);
   // svm->setC(0.019);
   // svm->setP(0);
@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
       // cv::TermCriteria(cv::TermCriteria::Type::EPS, 10000, 1e-7));
   dataset data;
   if (!data.load(argv[1], 48, 40)) return -2;
-  auto d = data.get(0.1);
+  auto d = data.get(0.05);
   svm->trainAuto(d.train);
   svm->save(save_path);
   std::cout<<util::error(util::test(svm, d.test),d.test->getResponses())<<'\n';

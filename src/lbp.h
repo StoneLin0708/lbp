@@ -44,7 +44,7 @@ struct histogram {
   using data_type = cv::Mat1f;
   static data_type get(const cv::Mat& m) {
     if (m.type() != CV_8UC1) throw "type must be CV_8UC1";
-    int hist[256];
+    int hist[256] = {0};
 
     int rows = m.rows;
     int cols = m.cols;
