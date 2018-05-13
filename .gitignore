@@ -3,11 +3,7 @@
 !.gitattributes
 !CMakeLists.txt
 !README.md
-!feature.txt
 !/src/
-!/src_o/
 !/testImg/
-!/tools/
-!/trained/
 !/third_party/
 !/test/
