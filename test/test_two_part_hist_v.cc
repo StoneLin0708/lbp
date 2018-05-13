@@ -11,7 +11,10 @@ int main(int argc, const char* argv[]) {
   cv::cvtColor(m, m, CV_BGR2GRAY);
   auto lbp = feature::lbp::get(m).mat();
   cv::imshow("lbp", lbp);
-  cv::imshow("hist", util::draw_hist(feature::histogram::get(lbp), 300, 512));
+  auto hist = feature::two_part_hist_v::get(lbp);
+  auto draw = util::draw_hist(hist.colRange(0, 256), 300, 512);
+  cv::vconcat(draw, util::draw_hist(hist.colRange(256, 512), 300, 512), draw);
+  cv::imshow("hist", draw);
   cv::waitKey(0);
 
   return 0;

@@ -1,4 +1,4 @@
-set(HEADER dataset.h feature.h detect.h)
+set(HEADER dataset.h feature.h detect.h util.h)
 set(SOURCE dataset.cc)
 
 add_library(lbp_svm ${SOURCE} ${HEADER})

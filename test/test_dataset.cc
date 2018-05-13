@@ -1,9 +1,10 @@
 #include <fmt/format.h>
 #include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include "dataset.h"
 int main(int argc, const char* argv[]) {
-  dataset data;
+  dataset<> data;
 
   if (argc != 2) {
     fmt::print("missing data dir\n");
