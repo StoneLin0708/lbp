@@ -18,6 +18,6 @@ int main(int argc, const char* argv[]) {
   cv::Mat filted;
   cv::resize(m, m, cv::Size(s.width * scale, s.height * scale));
   cv::bilateralFilter(m, filted, 9, 18, 4);
-  cv::imshow("result", detect::get(svm, filted, 48, 40));
+  cv::imshow("result", detect<>::get(svm, filted, 48, 40));
   cv::waitKey(0);
 }
