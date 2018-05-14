@@ -1,5 +1,5 @@
 # Course practice
-# lbp feature based on opencv svm classifier
+# lbp feature classifier
 
   * required : 
     + opencv 3
